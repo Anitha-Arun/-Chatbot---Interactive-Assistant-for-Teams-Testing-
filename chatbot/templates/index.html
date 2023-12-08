@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css')}}"/>
+</head>
+
+<body style="background-color:blanchedalmond">
+    <div class="chat-header"><h1  class="center">  COMMANDS ADDA</h1>
+   
+   
+    <div class="chat-container"><div class="container-fluid h-100">
+        <div class="row justify-content-center h-100">		
+            <div class="col-md-8 col-xl-6 chat">
+                <div class="card">
+                    <div class="card-header msg_head">
+                        <div class="d-flex bd-highlight">
+                            <div class="img_cont">
+                                <img src="https://ksmtelecom.co.uk/wp-content/uploads/2021/09/microsoft-teams-logo-png_480-480.png" class="rounded-circle user_img">
+                                <span class="online_icon"></span>
+                            </div>
+                            <div class="user_info">
+                                <span>Norden Team</span>
+                                <p>Ask me anything!</p>
+                            </div>
+                        </div>
+                    <div id="messageFormeight" class="card-body msg_card_body"></div>
+        
+        <div class="chat-body" id="chat-body">
+        </div>
+        </div>
+        </div>
+            <div class="card-footer" >
+            <input type="text" id="user-input" placeholder="Type your message..." style="color: black;">
+            <button  onclick="sendMessage()">Send</button>
+        </div>
+            </div>
+            </div>
+</div>
+
+    </div>
+    </div>
+    </div>
+
+                        
+    <script>
+        function sendMessage() {
+            
+            var userMessage = document.getElementById("user-input").value;
+            const date = new Date();
+        const hour = date.getHours();
+        const minute = date.getMinutes();
+        const str_time = hour + ':' + minute;
+        var userHtml = '<div class="d-flex justify-content-end mb-4"><div class="msg_cotainer_send">' + userMessage +  '</span></div><div class="img_cont_msg"><img src="https://img.favpng.com/19/23/15/user-computer-clip-art-png-favpng-n9j3ARD1K37N22knvqBNax4V0.jpg" class="rounded-circle user_img_msg">'+' <span class="msg_time_send">' + str_time+'</span></div></div>' ;
+        document.getElementById("messageFormeight").insertAdjacentHTML('beforeend', userHtml);
+     
+            
+
+            document.getElementById("user-input").value = "";
+
+            // Send user message to the server
+            fetch("/get_response", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: "user_message=" + encodeURIComponent(userMessage)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    var botResponse = data.bot_response;
+                    var botHtml = '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="https://ksmtelecom.co.uk/wp-content/uploads/2021/09/microsoft-teams-logo-png_480-480.png" class="rounded-circle user_img_msg"></div><div class="msg_cotainer">'+ botResponse +'</div></div>'+'<span class="msg_time">' +'\n'+ str_time +'</span>';
+
+                document.getElementById("messageFormeight").insertAdjacentHTML('beforeend', botHtml).appendMessage();
+            });
+
+        
+        }
+
+        function appendMessage(message) {
+            var chatBody = document.getElementById("chat-body");
+            var newMessage = document.createElement("div");
+            newMessage.innerHTML = message;
+            chatBody.appendChild(newMessage);
+        }
+    </script>
+</body>
+
+</html>
